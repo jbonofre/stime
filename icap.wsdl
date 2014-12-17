@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions name="SWAservice" targetNamespace="urn:attachment.ws.it" xmlns:ns="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="urn:attachment.ws.it" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:types="urn:attachment.ws.it" xmlns:soapbind="http://schemas.xmlsoap.org/wsdl/soap/">
+<wsdl:documentation>Simple SOAP with attachment service</wsdl:documentation>
+  <wsdl:types>
+    <xsd:schema targetNamespace="urn:attachment.ws.it">
+      <xsd:simpleType name="FileSpec">
+        <xsd:restriction base="xsd:string">
+          <xsd:minLength value="6"/>
+          <xsd:maxLength value="60"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:complexType name="Receipt">
+        <xsd:sequence>
+          <xsd:element name="Status" type="xsd:string"/>
+          <xsd:element name="Description" type="xsd:string"/>
+          <xsd:element name="CatalogID" type="xsd:string"/>
+          <xsd:element name="CatalogFileName" type="xsd:string"/>
+          <xsd:element name="FileSize" type="xsd:string"/>
+          <xsd:element name="Date-Time" type="xsd:string"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:element name="Input" type="types:FileSpec"/>
+      <xsd:element name="Output" type="types:Receipt"/>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="RequestMsg">
+    <wsdl:part name="Request" element="tns:Input">
+    </wsdl:part>
+    <wsdl:part name="Attachment" type="xsd:hexBinary">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="ResponseMsg">
+    <wsdl:part name="Response" element="tns:Output">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="Catalog">
+    <wsdl:operation name="Upload">
+      <wsdl:input message="tns:RequestMsg">
+    </wsdl:input>
+      <wsdl:output message="tns:ResponseMsg">
+    </wsdl:output>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="CatalogBinding" type="tns:Catalog">
+    <soapbind:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="Upload">
+      <soapbind:operation soapAction="Send"/>
+      <wsdl:input>
+        <mime:multipartRelated>
+          <mime:part>
+            <soapbind:body parts="Request" use="literal"/>
+          </mime:part>
+          <mime:part>
+            <mime:content part="Attachment" type="application/zip"/>
+          </mime:part>
+        </mime:multipartRelated>
+      </wsdl:input>
+      <wsdl:output>
+        <soapbind:body parts="Response" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="CatalogService">
+    <wsdl:port name="FileUpload" binding="tns:CatalogBinding">
+      <soapbind:address location="http://S5CB342080R:8880/icap"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>
