@@ -3,7 +3,7 @@ package com.stime.poc.oauth2;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.cxf.rs.security.oauth2.client.OAuthClientUtils;
 import org.apache.cxf.rs.security.oauth2.common.ClientAccessToken;
-import org.apache.cxf.rs.security.oauth2.grants.code.AuthorizationCodeGrant;
+import org.apache.cxf.rs.security.oauth2.grants.clientcred.ClientCredentialsGrant;
 import org.apache.cxf.rs.security.oauth2.provider.OAuthServiceException;
 
 import java.net.URI;
@@ -23,9 +23,9 @@ public class OAuthClientManager {
         return OAuthClientUtils.getAuthorizationURI(authorizationServiceURI, consumer.getKey(), redirectURI.toString(), "customers", "stime");
     }
 
-    public ClientAccessToken getAccessToken(AuthorizationCodeGrant codeGrant) {
+    public ClientAccessToken getAccessToken(ClientCredentialsGrant grant) {
         try {
-            return OAuthClientUtils.getAccessToken(accessTokenService, consumer, codeGrant);
+            return OAuthClientUtils.getAccessToken(accessTokenService, consumer, grant);
         } catch (OAuthServiceException e) {
             return null;
         }
